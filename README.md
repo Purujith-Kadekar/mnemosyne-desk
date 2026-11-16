@@ -1,4 +1,4 @@
-# Planner Webapp (Vercel + Firestore)
+# mnemosyne-desk (Vercel + Firestore)
 
 Cloud-first planner — tasks, reminders, alarms — shared by the **DeskBuddy**
 (ESP32-C3 desk companion) and the **Ventuno Q**. This app is the single
@@ -78,10 +78,9 @@ app/
   api/sync/route.js  THE endpoint (GET poll / POST ops)
 lib/
   store.js           mock + Firestore single-document store, validation, ops
-clients/
-  VentunoQ_PlannerClient.ino   reference client for the Ventuno Q
 test/
   sync-protocol.js   protocol test suite
+(the Ventuno Q client lives in ../ventuno-q, the DeskBuddy firmware in ../firmware)
 ARCHITECTURE.md      the protocol + cost model
 ```
 
