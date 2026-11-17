@@ -43,11 +43,21 @@ edits, 409 + rebase-retry, invalid-op rejection, idempotent re-puts.
      DeskBuddy's `include/wifi_credentials.h` as `CLOUD_API_KEY` and in the
      Ventuno Q sketch as `SYNC_KEY`.
    - `FIREBASE_SERVICE_ACCOUNT` (**required**: on Vercel the app refuses to start on the temporary mock store) — the **full JSON of a Firebase service
-     account key** pasted as one line. Firestore mode activates when this
-     is present (without it, the mock store is used — fine for a demo, not
-     for production).
+     account key** pasted as one line.
 4. Deploy. The API is at `https://<your-app>.vercel.app/api/sync`, the UI
    at the root.
+
+### Verify the deployment
+
+```bash
+curl -H "X-Api-Key: $SYNC_API_KEY" \
+  "https://<your-app>.vercel.app/api/health?deep=1"
+```
+
+Healthy = `ok: true`, `store.mode: "firestore"`, `store.project` set, and a
+`probe` with `rev`, `tasks`, `alarms`. If it is not healthy, the `error`
+field names the exact problem (bad service-account JSON, missing permission,
+wrong project, etc.).
 
 ### Firebase setup
 
@@ -67,6 +77,19 @@ service cloud.firestore {
   }
 }
 ```
+
+**You do not need to create collections, documents or "tables" in the
+Firebase console.** Firestore is schemaless: the app creates the single
+document `planner/main` automatically on the first write. The only
+requirements are:
+
+- the database exists in **Native mode** (the default when you create
+  Firestore), in the **same project** as the service account;
+- the service account can write to it (the key generated from Project
+  settings → Service accounts has the needed role);
+- `FIREBASE_SERVICE_ACCOUNT` is set in Vercel for the **Production**
+  environment, and you redeploy after changing it (Vercel bakes env vars
+  into a deployment).
 
 ## Structure
 
