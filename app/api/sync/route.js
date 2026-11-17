@@ -29,8 +29,20 @@ export const runtime = 'nodejs';
 function authorized(req) {
   const key = process.env.SYNC_API_KEY;
   if (!key) return true;                     // no key configured: open (dev)
-  const sent = req.headers.get('x-api-key') || '';   // Web Request: Headers.get(), not [] indexing
-  return sent === key;
+  const sent = req.headers.get('x-api-key') || '';
+  if (sent === key) return true;             // device / script / curl
+
+  // The planner UI is served from THIS deployment and cannot hold the
+  // device key (it would have to be embedded in the JS bundle). Browser
+  // fetches from the page carry Sec-Fetch-Site: same-origin, which a
+  // cross-site page cannot set. Devices and scripts still need X-Api-Key.
+  if (req.headers.get('sec-fetch-site') === 'same-origin') return true;
+  const origin = req.headers.get('origin');
+  const host = req.headers.get('host');
+  if (origin && host) {
+    try { if (new URL(origin).host === host) return true; } catch { /* bad origin */ }
+  }
+  return false;
 }
 
 function stateBody(doc, extra) {

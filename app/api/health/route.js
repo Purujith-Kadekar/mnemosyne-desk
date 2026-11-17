@@ -18,7 +18,15 @@ function authorized(req) {
   const key = process.env.SYNC_API_KEY;
   if (!key) return true;
   const sent = req.headers.get('x-api-key') || '';
-  return sent === key;
+  if (sent === key) return true;
+  // Same-origin planner UI (see /api/sync): allowed without the device key.
+  if (req.headers.get('sec-fetch-site') === 'same-origin') return true;
+  const origin = req.headers.get('origin');
+  const host = req.headers.get('host');
+  if (origin && host) {
+    try { if (new URL(origin).host === host) return true; } catch { /* bad origin */ }
+  }
+  return false;
 }
 
 export async function GET(req) {

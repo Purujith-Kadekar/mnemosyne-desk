@@ -41,7 +41,8 @@ edits, 409 + rebase-retry, invalid-op rejection, idempotent re-puts.
 3. Set environment variables (Project → Settings → Environment Variables):
    - `SYNC_API_KEY` — a long random string; put the same value in the
      DeskBuddy's `include/wifi_credentials.h` as `CLOUD_API_KEY` and in the
-     Ventuno Q sketch as `SYNC_KEY`.
+     Ventuno Q sketch as `SYNC_KEY`. The browser UI does **not** need this
+     key (same-origin requests are allowed); it is for devices and scripts.
    - `FIREBASE_SERVICE_ACCOUNT` (**required**: on Vercel the app refuses to start on the temporary mock store) — the **full JSON of a Firebase service
      account key** pasted as one line.
 4. Deploy. The API is at `https://<your-app>.vercel.app/api/sync`, the UI

@@ -93,9 +93,15 @@ op set changes nothing and does not bump the rev.
 
 ### Auth
 
-Set `SYNC_API_KEY` (env var) and clients send it as `X-Api-Key`. The
+Set `SYNC_API_KEY` (env var) and devices/scripts send it as `X-Api-Key`. The
 DeskBuddy sends the same value from `CLOUD_API_KEY` in its
 `wifi_credentials.h`. Without the env var the API is open (local dev).
+
+The planner **web UI** is served from the same deployment and cannot hold
+the device key without embedding it in the JS bundle. Same-origin browser
+requests (`Sec-Fetch-Site: same-origin`, or a matching `Origin` host) are
+therefore allowed without the key; cross-site requests and plain
+unauthenticated API calls still get 401. Devices keep using `X-Api-Key`.
 
 ## Firestore cost discipline (why this design)
 
